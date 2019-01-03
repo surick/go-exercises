@@ -1,15 +1,24 @@
 package vm
 
+import (
+	"log"
+
+	"github.com/surick/go-exercises/model"
+)
+
 // LoginViewModel struct
 type LoginViewModel struct {
 	BaseViewModel
 	Errs []string
 }
 
-// LoginViewModelOp struct
-type LoginViewModelOp struct {
-
+// AddError func
+func (v *LoginViewModel) AddError(errs ...string) {
+	v.Errs = append(v.Errs, errs...)
 }
+
+// LoginViewModelOp strutc
+type LoginViewModelOp struct{}
 
 // GetVM func
 func (LoginViewModelOp) GetVM() LoginViewModel {
@@ -18,7 +27,13 @@ func (LoginViewModelOp) GetVM() LoginViewModel {
 	return v
 }
 
-// AddError func
-func (v *LoginViewModel) AddError(errs ...string) {
-	v.Errs = append(v.Errs, errs...)
+// CheckLogin func
+func CheckLogin(username, password string) bool {
+	user, err := model.GetUserByUsername(username)
+	if err != nil {
+		log.Println("Can not find username: ", username)
+		log.Println("Error:", err)
+		return false
+	}
+	return user.CheckPassword(password)
 }

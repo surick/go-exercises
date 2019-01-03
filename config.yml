@@ -1,0 +1,6 @@
+mysql:
+  charset: utf8
+  db: go_exercises
+  host: localhost
+  password: root1234
+  user: root
