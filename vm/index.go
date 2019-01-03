@@ -1,6 +1,6 @@
 package vm
 
-import "go-exercises/model"
+import "github.com/surick/go-exercises/model"
 
 // IndexViewModel struct
 type IndexViewModel struct {

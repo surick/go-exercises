@@ -2,7 +2,7 @@ package controller
 
 import (
 	"net/http"
-	"go-exercises/vm"
+	"github.com/surick/go-exercises/vm"
 )
 
 type home struct {
