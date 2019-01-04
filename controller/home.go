@@ -1,36 +1,34 @@
 package controller
 
 import (
+	"log"
 	"net/http"
+
 	"github.com/surick/go-exercises/vm"
 )
 
-type home struct {
-
-}
+type home struct{}
 
 func (h home) registerRoutes() {
-	http.HandleFunc("/", indexHandler)
+	http.HandleFunc("/logout", middleAuth(logoutHandler))
 	http.HandleFunc("/login", loginHandler)
+	http.HandleFunc("/register", registerHandler)
+	http.HandleFunc("/", middleAuth(indexHandler))
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+	tpName := "index.html"
 	vop := vm.IndexViewModelOp{}
-	v := vop.GetVM()
-	templates["index.html"].Execute(w, &v)
-}
-
-func check(username, password string) bool{
-	if username == "Surick" && password == "root" {
-		return true
-	}
-	return false
+	username, _ := getSessionUser(r)
+	v := vop.GetVM(username)
+	templates[tpName].Execute(w, &v)
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	tpName := "login.html"
 	vop := vm.LoginViewModelOp{}
 	v := vop.GetVM()
+
 	if r.Method == http.MethodGet {
 		templates[tpName].Execute(w, &v)
 	}
@@ -39,23 +37,51 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		username := r.Form.Get("username")
 		password := r.Form.Get("password")
 
-		if len(username) < 3 {
-			v.AddError("username must longer than 3")
-		}
-
-		if len(password) < 3 {
-			v.AddError("password must longer than 3")
-		}
-
-		if !check(username, password) {
-			v.AddError("username password not correct, please input again")
-		}
+		errs := checkLogin(username, password)
+		v.AddError(errs...)
 
 		if len(v.Errs) > 0 {
 			templates[tpName].Execute(w, &v)
 		} else {
+			setSessionUser(w, r, username)
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
-		//fmt.Fprint(w, "Username:%s Password:%s", username, password)
 	}
+}
+
+func registerHandler(w http.ResponseWriter, r *http.Request) {
+	tpName := "register.html"
+	vop := vm.RegisterViewModelOp{}
+	v := vop.GetVM()
+
+	if r.Method == http.MethodGet {
+		templates[tpName].Execute(w, &v)
+	}
+	if r.Method == http.MethodPost {
+		r.ParseForm()
+		username := r.Form.Get("username")
+		email := r.Form.Get("email")
+		pwd1 := r.Form.Get("pwd1")
+		pwd2 := r.Form.Get("pwd2")
+
+		errs := checkRegister(username, email, pwd1, pwd2)
+		v.AddError(errs...)
+
+		if len(v.Errs) > 0 {
+			templates[tpName].Execute(w, &v)
+		} else {
+			if err := addUser(username, pwd1, email); err != nil {
+				log.Println("add User error:", err)
+				w.Write([]byte("Error insert database"))
+				return
+			}
+			setSessionUser(w, r, username)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+		}
+	}
+}
+
+func logoutHandler(w http.ResponseWriter, r *http.Request) {
+	clearSession(w, r)
+	http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 }
