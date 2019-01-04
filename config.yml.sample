@@ -7,7 +7,7 @@ mysql:
 mail:
   smtp: smtp.163.com
   smtp-port: 25
-  user: 13013623154@163.com
-  password:
+  user: user@163.com
+  password: password
 server:
   url: http://127.0.0.1:8888
