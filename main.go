@@ -1,11 +1,15 @@
 package main
 
 import (
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/surick/go-exercises/controller"
 	"github.com/surick/go-exercises/model"
+	"github.com/gorilla/context"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 func main() {
@@ -17,5 +21,7 @@ func main() {
 	// Setup Controller
 	controller.Startup()
 
-	http.ListenAndServe(":8888", nil)
+	port := os.Getenv("PORT")
+	log.Println("Running on port: ", port)
+	http.ListenAndServe(":"+port, context.ClearHandler(http.DefaultServeMux))
 }

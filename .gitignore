@@ -4,3 +4,7 @@
 *.iml
 *.ipr
 *.log
+
+config.yml
+
+app/

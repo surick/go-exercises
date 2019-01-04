@@ -2,13 +2,23 @@ package config
 
 import (
 	"fmt"
-
+	"log"
 	"github.com/spf13/viper"
+	"os"
+	"strconv"
 )
 
 func init() {
-	projectName := "go-mega"
-	getConfig(projectName)
+	projectName := "go-exercises"
+	dbType := GetDBType()
+	log.Println("OS DBTYPE:", dbType)
+
+	if IsHeroku() {
+		log.Println("Get Env from os.env")
+	} else {
+		log.Println("Init viper")
+		getConfig(projectName)
+	}
 }
 
 func getConfig(projectName string) {
@@ -32,5 +42,48 @@ func GetMysqlConnectingString() string {
 	db := viper.GetString("mysql.db")
 	charset := viper.GetString("mysql.charset")
 
-	return fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?charset=%s&parseTime=true", usr, pwd, host, db, charset)
+	return fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?charset=%s&parseTime=true&loc=Local", usr, pwd, host, db, charset)
+}
+
+// GetHerokuConnectingString func
+func GetHerokuConnectingString() string {
+	return os.Getenv("DATABASE_URL")
+}
+
+// GetSMTPConfig func
+func GetSMTPConfig() (server string, port int, user, pwd string) {
+	if IsHeroku() {
+		server = os.Getenv("MAIL_SMTP")
+		port, _ = strconv.Atoi(os.Getenv("MAIL_SMTP_PORT"))
+		user = os.Getenv("MAIL_USER")
+		pwd = os.Getenv("MAIL_PASSWORD")
+		return
+	}
+
+	server = viper.GetString("mail.smtp")
+	port = viper.GetInt("mail.smtp-port")
+	user = viper.GetString("mail.user")
+	pwd = viper.GetString("mail.password")
+	return
+}
+
+// GetServerURL func
+func GetServerURL() (url string) {
+	if IsHeroku() {
+		url = os.Getenv("SERVER_URL")
+		return
+	}
+	url = viper.GetString("server.url")
+	return
+}
+
+// GetDBType func
+func GetDBType() string {
+	dbtype := os.Getenv("DBTYPE")
+	return dbtype
+}
+
+// IsHeroku func
+func IsHeroku() bool {
+	return GetDBType() == "heroku"
 }
