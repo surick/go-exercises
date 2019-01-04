@@ -24,7 +24,7 @@ func (h home) registerRoutes() {
 	r.HandleFunc("/follow/{username}", middleAuth(followHandler))
 	r.HandleFunc("/unfollow/{username}", middleAuth(unFollowHandler))
 	r.HandleFunc("/profile_edit", middleAuth(profileEditHandler))
-	r.HandleFunc("/explore.html", middleAuth(exploreHandler))
+	r.HandleFunc("/explore", middleAuth(exploreHandler))
 	r.HandleFunc("/reset_password_request", resetPasswordRequestHandler)
 	r.HandleFunc("/reset_password/{token}", resetPasswordHandler)
 	r.HandleFunc("/user/{username}/popup", popupHandler)
@@ -35,7 +35,7 @@ func (h home) registerRoutes() {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	tpName := "email.html"
+	tpName := "index.html"
 	vop := vm.IndexViewModelOp{}
 	page := getPage(r)
 	username, _ := getSessionUser(r)
@@ -195,7 +195,7 @@ func unFollowHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func exploreHandler(w http.ResponseWriter, r *http.Request) {
-	tpName := "explore.html.html"
+	tpName := "explore.html"
 	vop := vm.ExploreViewModelOp{}
 	username, _ := getSessionUser(r)
 	page := getPage(r)

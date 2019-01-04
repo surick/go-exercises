@@ -1,13 +1,13 @@
 mysql:
   charset: utf8
-  db: dbname
+  db: go_exercises
   host: localhost
-  password: password
+  password: root1234
   user: root
 mail:
-  smtp: smtp-server
-  smtp-port: 587
-  user: user
-  password: pwd
+  smtp: smtp.163.com
+  smtp-port: 25
+  user: 13013623154@163.com
+  password:
 server:
   url: http://127.0.0.1:8888
