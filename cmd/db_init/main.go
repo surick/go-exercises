@@ -17,14 +17,14 @@ func main() {
 	db.DropTableIfExists(model.User{}, model.Post{}, "follower")
 	db.CreateTable(model.User{}, model.Post{})
 
-	model.AddUser("bonfy", "abc123", "i@bonfy.im")
-	model.AddUser("rene", "abc123", "rene@test.com")
+	model.AddUser("surick", "abc123", "jk103@qq.com")
+	model.AddUser("jin", "abc123", "godcoder1996@gmail.com")
 
-	u1, _ := model.GetUserByUsername("bonfy")
+	u1, _ := model.GetUserByUsername("surick")
 	u1.CreatePost("Beautiful day in Portland!")
 	model.UpdateAboutMe(u1.Username, `I'm the author of Go-exercises Tutorial you are reading now!`)
 
-	u2, _ := model.GetUserByUsername("rene")
+	u2, _ := model.GetUserByUsername("jin")
 	u2.CreatePost("The Avengers movie was so cool!")
 	u2.CreatePost("Sun shine is beautiful")
 
